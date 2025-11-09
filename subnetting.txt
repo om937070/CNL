@@ -14,3 +14,4 @@ print("Total Hosts      :", network.num_addresses - 2)
 print("First Usable IP  :", list(network.hosts())[0])
 print("Last Usable IP   :", list(network.hosts())[-1])
   example 192.168.1.0/24------------keep below 32
+91.108.106.28
