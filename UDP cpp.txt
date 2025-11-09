@@ -1,0 +1,107 @@
+UDP Server
+
+#include <iostream>
+#include <cstring>
+#include <unistd.h>
+#include <arpa/inet.h>
+
+#define PORT 9876
+#define BUFFER_SIZE 1024
+
+int main() {
+    int sockfd;
+    char buffer[BUFFER_SIZE];
+    struct sockaddr_in servaddr, cliaddr;
+    socklen_t len = sizeof(cliaddr);
+
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        perror("Socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    memset(&servaddr, 0, sizeof(servaddr));
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = INADDR_ANY;
+    servaddr.sin_port = htons(PORT);
+
+    if (bind(sockfd, (const struct sockaddr*)&servaddr, sizeof(servaddr)) < 0) {
+        perror("Bind failed");
+        exit(EXIT_FAILURE);
+    }
+
+    std::cout << "UDP Server listening on port " << PORT << std::endl;
+
+    while (true) {
+        memset(buffer, 0, BUFFER_SIZE);
+        recvfrom(sockfd, buffer, BUFFER_SIZE, MSG_WAITALL, (struct sockaddr*)&cliaddr, &len);
+
+        std::cout << "Client: " << buffer << std::endl;
+        if (strcmp(buffer, "exit") == 0) break;
+
+        std::string response = "Server echo: " + std::string(buffer);
+        sendto(sockfd, response.c_str(), response.size(), MSG_CONFIRM, (const struct sockaddr*)&cliaddr, len);
+    }
+
+    close(sockfd);
+    std::cout << "UDP Server stopped.\n";
+    return 0;
+}
+ 
+UDP Client
+
+#include <iostream>
+#include <cstring>
+#include <unistd.h>
+#include <arpa/inet.h>
+
+#define PORT 9876
+#define BUFFER_SIZE 1024
+
+int main() {
+    int sockfd;
+    char buffer[BUFFER_SIZE];
+    struct sockaddr_in servaddr;
+    socklen_t len = sizeof(servaddr);
+
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        perror("Socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    memset(&servaddr, 0, sizeof(servaddr));
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_port = htons(PORT);
+    servaddr.sin_addr.s_addr = INADDR_ANY;
+
+    std::cout << "Connected to UDP Server.\n";
+
+    while (true) {
+        std::string message;
+        std::cout << "Enter message: ";
+        std::getline(std::cin, message);
+
+        sendto(sockfd, message.c_str(), message.size(), MSG_CONFIRM, (const struct sockaddr*)&servaddr, len);
+        if (message == "exit") break;
+
+        memset(buffer, 0, BUFFER_SIZE);
+        recvfrom(sockfd, buffer, BUFFER_SIZE, MSG_WAITALL, (struct sockaddr*)&servaddr, &len);
+        std::cout << "Server: " << buffer << std::endl;
+    }
+
+    close(sockfd);
+    return 0;
+}
+
+sudo apt update
+sudo apt install g++ netcat
+
+g++ tcp_server.cpp -o tcp_server
+g++ tcp_client.cpp -o tcp_client
+g++ udp_server.cpp -o udp_server
+g++ udp_client.cpp -o udp_client
+
+./tcp_server
+./tcp_client
+# or
+./udp_server
+./udp_client
