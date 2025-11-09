@@ -21,4 +21,39 @@ print("\n Final Distance Table:   ")
 for i in range(n):
     for j in range(n):
         print(f"{distance[i][j]: 5}", end= "")
+
     print()                
++___________________________________________________________________________________________________________
+network = {
+    'A': {'B': 1, 'C': 4},
+    'B': {'A': 1, 'C': 2, 'D': 7},
+    'C': {'A': 4, 'B': 2, 'D': 1},
+    'D': {'B': 7, 'C': 1}
+}
+
+# Initialize routing table: each router knows only direct neighbors
+routing = {}
+for r in network:
+    routing[r] = {}
+    for n, cost in network[r].items():
+        routing[r][n] = cost
+    routing[r][r] = 0  # Distance to itself
+
+# Update step (like one round of distance vector update)
+def update():
+    for r in network:
+        for n in network[r]:
+            for dest, dist in routing[n].items():
+                new_dist = network[r][n] + dist
+                if dest not in routing[r] or new_dist < routing[r][dest]:
+                    routing[r][dest] = new_dist
+
+# Run a few rounds until it converges
+for _ in range(5):
+    update()
+
+# Print routing tables
+for r in routing:
+    print(f"\nRouting table for Router {r}:")
+    for dest, dist in sorted(routing[r].items()):
+        print(f"  To {dest} = {dist}")
