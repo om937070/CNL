@@ -1,0 +1,14 @@
+import socket
+
+print("===== DNS Lookup Tool =====")
+print("1. Domain → IP address")
+print("2. IP address → Domain name")
+
+choice = int(input("Enter choice (1 or 2): "))
+
+if choice == 1:
+    domain = input("Enter domain name: ")
+    print("IP address for", domain, "is:", socket.gethostbyname(domain))
+elif choice == 2:
+    ip = input("Enter IP address: ")
+    print("Domain name for", ip, "is:", socket.gethostbyaddr(ip)[0])

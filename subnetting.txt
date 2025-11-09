@@ -1,0 +1,16 @@
+# Subnetting 
+ 
+import ipaddress
+
+ip = input("Enter the IP Address and Subnet Mask:   ")
+
+network = ipaddress.ip_network(ip, strict=False)
+
+print("\n Subnet Details:  ")
+print("Network Address:  ",network.network_address)
+print("Broadcast Address:  ", network.broadcast_address)
+print("Subnet Mask: ",network.netmask)
+print("Total Hosts      :", network.num_addresses - 2)
+print("First Usable IP  :", list(network.hosts())[0])
+print("Last Usable IP   :", list(network.hosts())[-1])
+  example 192.168.1.0/24------------keep below 32

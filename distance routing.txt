@@ -1,0 +1,24 @@
+# Distance routing 
+
+n = int(input("Enter the number of nodes:  "))
+cost = []
+
+print("Enter cost Maxtrix  (Use 999 for no direct path ) ")
+for i in range(n):
+    row = list(map(int, input().split()))
+    cost.append(row)
+
+distance  = [row[:]for row in cost]
+
+for k in range(n):
+    for i in range(n):
+        for j in range(n): #Bellman-Ford Logic
+            if distance[i][j] > distance[i][k] + distance[k][j]:
+               distance[i][j] = distance[i][k] + distance[k][j]
+
+
+print("\n Final Distance Table:   ")
+for i in range(n):
+    for j in range(n):
+        print(f"{distance[i][j]: 5}", end= "")
+    print()                

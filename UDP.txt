@@ -1,0 +1,43 @@
+import socket
+import os
+
+host = 'localhost'
+port = 9999
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind((host, port))
+print("Server waiting for file...")
+
+# Receive the file data
+data, addr = s.recvfrom(65535)
+
+# Save with .txt extension by default
+filename = "received_file.txt"
+with open(filename, 'wb') as f:
+    f.write(data)
+
+# Confirm save
+print(f"File received successfully and saved as {filename}")
+
+s.close()
+
+
+
+--------------------------------------------client--------------------------------
+import socket, os
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+addr = ('localhost', 9999)
+
+fname = input("Enter the filename to send: ").strip()
+
+if os.path.exists(fname):
+    with open(fname, 'rb') as f:
+        s.sendto(f.read(), addr)
+    print("File sent successfully!")
+else:
+    print("File not found!")
+
+s.close()
+
+
